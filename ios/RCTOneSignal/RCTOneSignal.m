@@ -104,8 +104,11 @@ OSNotificationOpenedResult* coldStartOSNotificationOpenedResult;
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:objectData
                                                          options:NSJSONReadingMutableContainers
                                                            error:&jsonError];
-    
-    [curRCTBridge.eventDispatcher sendAppEventWithName:@"remoteNotificationOpened" body:json];
+    double delayInSeconds = 1.5;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [curRCTBridge.eventDispatcher sendAppEventWithName:@"remoteNotificationOpened" body:json];
+    });
 }
 
 - (void)handleRemoteNotificationsRegistered:(NSNotification *)notification {

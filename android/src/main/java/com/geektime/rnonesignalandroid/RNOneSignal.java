@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -207,8 +208,14 @@ public class RNOneSignal extends ReactContextBaseJavaModule implements Lifecycle
 
     private void notifyNotificationOpened(Bundle bundle) {
         try {
-            JSONObject jsonObject = new JSONObject(bundle.getString("result"));
-            sendEvent("remoteNotificationOpened",  RNUtils.jsonToWritableMap(jsonObject));
+            Handler handler = new Handler();
+            final JSONObject jsonObject = new JSONObject(bundle.getString("result"));
+            handler.postDelayed(new Runnable() {
+              @Override
+              public void run() {
+                sendEvent("remoteNotificationOpened",  RNUtils.jsonToWritableMap(jsonObject));
+              }
+            }, 4000);
         } catch(Throwable t) {
             t.printStackTrace();
         }
