@@ -6,10 +6,10 @@ import invariant from 'invariant';
 
 var RNOneSignal = NativeModules.OneSignal;
 
-var DEVICE_NOTIF_RECEIVED_EVENT = 'remoteNotificationReceived';
-var DEVICE_NOTIF_OPENED_EVENT = 'remoteNotificationOpened';
-var DEVICE_NOTIF_REG_EVENT = 'remoteNotificationsRegistered';
-var DEVICE_IDS_AVAILABLE = 'idsAvailable';
+var DEVICE_NOTIF_RECEIVED_EVENT = 'OneSignal-remoteNotificationReceived';
+var DEVICE_NOTIF_OPENED_EVENT = 'OneSignal-remoteNotificationOpened';
+var DEVICE_NOTIF_REG_EVENT = 'OneSignal-remoteNotificationsRegistered';
+var DEVICE_IDS_AVAILABLE = 'OneSignal-idsAvailable';
 
 const _notifHandlers = new Map();
 
@@ -86,8 +86,20 @@ export default class OneSignal {
     }
 
     static registerForPushNotifications() {
-        if (Platform.OS == 'ios') {
+        if (Platform.OS === 'ios') {
             RNOneSignal.registerForPushNotifications();
+        } else {
+            console.log("This function is not supported on Android");
+        }
+    }
+    
+    static promptForPushNotificationsWithUserResponse(callback: Function) {
+        if (Platform.OS === 'ios') {
+            invariant(
+                typeof callback === 'function',
+                'Must provide a valid callback'
+            );
+            RNOneSignal.promptForPushNotificationsWithUserResponse(callback);
         } else {
             console.log("This function is not supported on Android");
         }
@@ -95,7 +107,7 @@ export default class OneSignal {
 
     static requestPermissions(permissions) {
         var requestedPermissions = {};
-        if (Platform.OS == 'ios') {
+        if (Platform.OS === 'ios') {
             if (permissions) {
                 requestedPermissions = {
                     alert: !!permissions.alert,
@@ -120,7 +132,7 @@ export default class OneSignal {
     }
 
     static checkPermissions(callback: Function) {
-        if (Platform.OS == 'ios') {
+        if (Platform.OS === 'ios') {
             invariant(
                 typeof callback === 'function',
                 'Must provide a valid callback'
@@ -129,6 +141,14 @@ export default class OneSignal {
         } else {
             console.log("This function is not supported on Android");
         }
+    }
+
+    static getPermissionSubscriptionState(callback: Function) {
+        invariant(
+            typeof callback === 'function',
+            'Must provide a valid callback'
+        );
+        RNOneSignal.getPermissionSubscriptionState(callback);
     }
 
     static sendTag(key, value) {
@@ -148,7 +168,7 @@ export default class OneSignal {
     }
 
     static enableVibrate(enable) {
-        if (Platform.OS == 'android') {
+        if (Platform.OS === 'android') {
             RNOneSignal.enableVibrate(enable);
         } else {
             console.log("This function is not supported on iOS");
@@ -156,7 +176,7 @@ export default class OneSignal {
     }
 
     static enableSound(enable) {
-        if (Platform.OS == 'android') {
+        if (Platform.OS === 'android') {
             RNOneSignal.enableSound(enable);
         } else {
             console.log("This function is not supported on iOS");
@@ -176,21 +196,21 @@ export default class OneSignal {
     //Android only: Set Display option of the notifications. displayOption is of type OSInFocusDisplayOption
     // 0 -> None, 1 -> InAppAlert, 2 -> Notification
     static inFocusDisplaying(displayOption) {
-        if (Platform.OS == 'android') {
+        if (Platform.OS === 'android') {
             RNOneSignal.inFocusDisplaying(displayOption);
         }
     }
 
-    static postNotification(contents, data, player_id) {
-        if (Platform.OS == 'android') {
-            RNOneSignal.postNotification(JSON.stringify(contents), JSON.stringify(data), player_id);
+    static postNotification(contents, data, player_id, otherParameters) {
+        if (Platform.OS === 'android') {
+            RNOneSignal.postNotification(JSON.stringify(contents), JSON.stringify(data), player_id, JSON.stringify(otherParameters));
         } else {
-            RNOneSignal.postNotification(contents, data, player_id);
+            RNOneSignal.postNotification(contents, data, player_id, otherParameters);
         }
     }
 
     static clearOneSignalNotifications() {
-        if (Platform.OS == 'android') {
+        if (Platform.OS === 'android') {
             RNOneSignal.clearOneSignalNotifications();
         } else {
             console.log("This function is not supported on iOS");
@@ -198,7 +218,7 @@ export default class OneSignal {
     }
 
     static cancelNotification(id) {
-        if (Platform.OS == 'android') {
+        if (Platform.OS === 'android') {
             RNOneSignal.cancelNotification(id);
         } else {
             console.log("This function is not supported on iOS");
